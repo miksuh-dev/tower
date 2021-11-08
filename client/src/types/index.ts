@@ -1,5 +1,5 @@
 // import * as PIXI from "pixi.js";
-import { InterraciveBlock } from "@/blocks/common";
+import { Interactive } from "@/blocks";
 
 export interface BlockDimensions {
   x: number;
@@ -11,14 +11,14 @@ export interface BlockDimensions {
 }
 
 export interface InterrativeBlockOnClick {
-  (block: InterraciveBlock): void;
+  (block: Interactive): void;
 }
 
 export interface InterraciveBlockOnHover {
-  (block: InterraciveBlock): void;
+  (block: Interactive): void;
 }
 export interface InterraciveBlockOnHoverOut {
-  (block: InterraciveBlock): void;
+  (block: Interactive): void;
 }
 
 export interface InterracitveBlockActions {

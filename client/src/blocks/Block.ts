@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import Grid from "@/grid";
 import { BlockDimensions } from "@/types";
 
-export class Block {
+export default class Block {
   public grid: Grid;
   public sprite: PIXI.Sprite;
   public dimensions: BlockDimensions;

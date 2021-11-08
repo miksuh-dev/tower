@@ -1,8 +1,8 @@
 import Grid from "@/grid";
-import { InterraciveBlock } from "@/blocks/common";
+import { Interactive } from "@/blocks";
 import { BlockDimensions } from "@/types";
 
-export class Turret extends InterraciveBlock {
+export default class Turret extends Interactive {
   constructor(grid: Grid, dimensions: BlockDimensions) {
     const texture = "assets/blocks/turret.png";
     super(grid, dimensions, texture);

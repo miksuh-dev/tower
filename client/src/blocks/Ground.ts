@@ -1,8 +1,8 @@
 import Grid from "@/grid";
-import { Turret, InterraciveBlock } from "@/blocks/common";
+import { Turret, Interactive } from "@/blocks";
 import { BlockDimensions } from "@/types";
 
-class Ground extends InterraciveBlock {
+export default class Ground extends Interactive {
   constructor(grid: Grid, dimensions: BlockDimensions) {
     const texture = "assets/blocks/ground.png";
     super(grid, dimensions, texture);
@@ -40,7 +40,7 @@ class Ground extends InterraciveBlock {
 
     this.grid.board[x][y] = newBlock;
     this.sprite.destroy();
-    this.grid.activePath.update();
+    // this.grid.activePath.update();
   }
 
   protected onHover() {
@@ -54,5 +54,3 @@ class Ground extends InterraciveBlock {
 
   protected onHoverOut() {}
 }
-
-export { Ground };

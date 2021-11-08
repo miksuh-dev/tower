@@ -1,6 +1,4 @@
-import { Block } from "@/blocks/common";
-import { Ground } from "@/blocks";
-
+import { Block, Ground } from "@/blocks";
 import { Tile } from "@/types";
 import PF from "pathfinding";
 

@@ -111,7 +111,7 @@ class Grid {
         });
       }
     }
-    this.activePath.update();
+    // this.activePath.update();
   }
 }
 
