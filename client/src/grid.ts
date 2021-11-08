@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { Ground, Wall, Block } from "@/blocks";
+import { Ground, Wall, Block } from "@/block";
 import ActivePath from "@/overlay/ActivePath";
 import { Tile } from "@/types";
 import HoverPath from "./overlay/HoverPath";

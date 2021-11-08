@@ -1,5 +1,5 @@
 // import * as PIXI from "pixi.js";
-import { Interactive } from "@/blocks";
+import { Interactive } from "@/block";
 
 export interface BlockDimensions {
   x: number;

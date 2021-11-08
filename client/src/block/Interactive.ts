@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import Grid from "@/grid";
 import { BlockDimensions } from "@/types";
-import { Block } from "@/blocks";
+import { Block } from "@/block";
 
 export default class InterraciveBlock extends Block {
   constructor(

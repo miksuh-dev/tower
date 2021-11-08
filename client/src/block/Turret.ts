@@ -1,10 +1,10 @@
 import Grid from "@/grid";
-import { Interactive } from "@/blocks";
+import { Interactive } from "@/block";
 import { BlockDimensions } from "@/types";
 
 export default class Turret extends Interactive {
   constructor(grid: Grid, dimensions: BlockDimensions) {
-    const texture = "assets/blocks/turret.png";
+    const texture = "assets/block/turret.png";
     super(grid, dimensions, texture);
 
     this.sprite
