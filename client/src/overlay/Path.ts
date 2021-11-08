@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import Grid from "@/grid";
+import Grid from "@/Grid";
 
 export default class Path {
   grid: Grid;

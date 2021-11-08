@@ -1,4 +1,4 @@
-import Grid from "@/grid";
+import Grid from "@/Grid";
 import Path from "@/overlay/Path";
 import { generateMatrix, findPath } from "@/utils/pathfind";
 

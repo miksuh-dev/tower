@@ -1,7 +1,7 @@
 // import * as PIXI from "pixi.js";
 import { Interactive } from "@/block";
 
-export interface BlockDimensions {
+export interface SpriteDimensions {
   x: number;
   y: number;
   positionX: number;

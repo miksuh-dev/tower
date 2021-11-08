@@ -1,9 +1,9 @@
-import Grid from "@/grid";
+import Grid from "@/Grid";
 import { Block } from "@/block";
-import { BlockDimensions } from "@/types";
+import { SpriteDimensions } from "@/types";
 
 export default class Wall extends Block {
-  constructor(grid: Grid, dimensions: BlockDimensions) {
+  constructor(grid: Grid, dimensions: SpriteDimensions) {
     const texture = "assets/block/wall.png";
     super(grid, dimensions, texture);
   }

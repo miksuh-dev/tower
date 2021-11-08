@@ -1,15 +1,15 @@
 import * as PIXI from "pixi.js";
-import Grid from "@/grid";
-import { BlockDimensions } from "@/types";
+import Grid from "@/Grid";
+import { SpriteDimensions } from "@/types";
 
 export default class Block {
   public grid: Grid;
   public sprite: PIXI.Sprite;
-  public dimensions: BlockDimensions;
+  public dimensions: SpriteDimensions;
 
   constructor(
     grid: Grid,
-    dimensions: BlockDimensions,
+    dimensions: SpriteDimensions,
     texture: PIXI.SpriteSource
   ) {
     const { positionX, positionY, width, height } = dimensions;

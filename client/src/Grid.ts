@@ -3,8 +3,9 @@ import { Ground, Wall, Block } from "@/block";
 import ActivePath from "@/overlay/ActivePath";
 import { Tile } from "@/types";
 import HoverPath from "./overlay/HoverPath";
+import { Population } from '@/common';
 
-class Grid {
+export default class Grid {
   app: PIXI.Application;
   tileNumX: number;
   tileNumY: number;
@@ -17,6 +18,8 @@ class Grid {
 
   activePath: ActivePath;
   hoverPath: HoverPath;
+
+  population: Population
 
   constructor(
     app: PIXI.Application,
@@ -44,6 +47,9 @@ class Grid {
 
     this.activePath = new ActivePath(this);
     this.hoverPath = new HoverPath(this);
+
+    this.population = new Population(this);
+    this.population.create(6)
   }
 
   private equals = (position1: Tile, position2: Tile) =>
@@ -114,5 +120,3 @@ class Grid {
     // this.activePath.update();
   }
 }
-
-export default Grid;

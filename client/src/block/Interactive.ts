@@ -1,12 +1,12 @@
 import * as PIXI from "pixi.js";
-import Grid from "@/grid";
-import { BlockDimensions } from "@/types";
+import Grid from "@/Grid";
+import { SpriteDimensions } from "@/types";
 import { Block } from "@/block";
 
 export default class InterraciveBlock extends Block {
   constructor(
     grid: Grid,
-    dimensions: BlockDimensions,
+    dimensions: SpriteDimensions,
     texture: PIXI.SpriteSource
   ) {
     super(grid, dimensions, texture);
