@@ -1,11 +1,7 @@
 // import * as PIXI from "pixi.js";
 import { Interactive } from "@/block";
 
-export interface SpriteDimensions {
-  x: number;
-  y: number;
-  positionX: number;
-  positionY: number;
+export interface Dimension {
   width: number;
   height: number;
 }
@@ -27,7 +23,29 @@ export interface InterracitveBlockActions {
   OnHoverOut?: InterraciveBlockOnHoverOut;
 }
 
-export interface Tile {
+export interface GridTile {
   x: number;
   y: number;
+}
+
+export interface EnemyProperties {
+  speed: number;
+}
+
+export interface Coordinate {
+  x: number;
+  y: number;
+}
+
+export interface UnitQueue {
+  delay: number;
+  queueCount: number;
+}
+
+export enum DIRECTION {
+  "UP",
+  "RIGHT",
+  "DOWN",
+  "LEFT",
+  "NONE",
 }

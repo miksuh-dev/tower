@@ -1,11 +1,11 @@
 import Grid from "@/Grid";
 import { Interactive } from "@/block";
-import { SpriteDimensions } from "@/types";
+import { Dimension, Coordinate } from "@/types";
 
 export default class Turret extends Interactive {
-  constructor(grid: Grid, dimensions: SpriteDimensions) {
+  constructor(grid: Grid, dimension: Dimension, coordinate: Coordinate) {
     const texture = "assets/block/turret.png";
-    super(grid, dimensions, texture);
+    super(grid, dimension, coordinate, texture);
 
     this.sprite
       .on("pointerdown", () => {

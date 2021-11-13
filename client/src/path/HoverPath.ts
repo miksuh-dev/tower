@@ -1,6 +1,6 @@
 import Grid from "@/Grid";
-import { Tile } from "@/types";
-import Path from "@/overlay/Path";
+import { GridTile } from "@/types";
+import { Path } from "@/path";
 import { generateMatrix, findPath } from "@/utils/pathfind";
 
 export default class HoverPath extends Path {
@@ -9,7 +9,7 @@ export default class HoverPath extends Path {
     super(grid, texture);
   }
 
-  public update(currentPosition: Tile) {
+  public update(currentPosition: GridTile) {
     const { board, startPosition, endPosition, tileNumX, tileNumY } = this.grid;
 
     const matrix = generateMatrix(board, tileNumX, tileNumY);

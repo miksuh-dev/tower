@@ -1,11 +1,11 @@
 import Grid from "@/Grid";
 import { Turret, Interactive } from "@/block";
-import { SpriteDimensions } from "@/types";
+import { Dimension, Coordinate } from "@/types";
 
 export default class Ground extends Interactive {
-  constructor(grid: Grid, dimensions: SpriteDimensions) {
+  constructor(grid: Grid, dimension: Dimension, coordinate: Coordinate) {
     const texture = "assets/block/ground.png";
-    super(grid, dimensions, texture);
+    super(grid, dimension, coordinate, texture);
 
     this.sprite
       .on("pointerdown", () => {
@@ -27,29 +27,33 @@ export default class Ground extends Interactive {
   }
 
   protected onClick() {
-    const { height, positionX, positionY, width, x, y } = this.dimensions;
+    const { height, width, x, y } = this.sprite;
 
-    const newBlock = new Turret(this.grid, {
-      x,
-      y,
-      positionX,
-      positionY,
-      width,
-      height,
-    });
+    const newBlock = new Turret(
+      this.grid,
+      {
+        width,
+        height,
+      },
+      {
+        x,
+        y,
+      }
+    );
 
-    this.grid.board[x][y] = newBlock;
+    const { x: gridX, y: gridY } = this.getGridPosition();
+
+    this.grid.board[gridX][gridY] = newBlock;
     this.sprite.destroy();
-    // this.grid.activePath.update();
+    this.grid.population.onUpdatePath();
   }
 
   protected onHover() {
-    const position = {
-      x: this.dimensions.x,
-      y: this.dimensions.y,
-    };
+    if (this.grid.hoverPath) {
+      const position = this.getGridPosition();
 
-    this.grid.hoverPath.update(position);
+      this.grid.hoverPath.update(position);
+    }
   }
 
   protected onHoverOut() {}

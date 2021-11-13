@@ -1,32 +1,30 @@
 import * as PIXI from "pixi.js";
 import { Ground, Wall, Block } from "@/block";
-import ActivePath from "@/overlay/ActivePath";
-import { Tile } from "@/types";
-import HoverPath from "./overlay/HoverPath";
-import { Population } from '@/common';
+import { GridTile, Coordinate } from "@/types";
+import { HoverPath } from "./path";
+import { Population } from "@/common";
 
 export default class Grid {
   app: PIXI.Application;
   tileNumX: number;
   tileNumY: number;
-  startPosition: Tile;
-  endPosition: Tile;
+  startPosition: GridTile;
+  endPosition: GridTile;
   pathDisplay: PIXI.Container;
   board: Block[][];
   tileWidth: number;
   tileHeight: number;
 
-  activePath: ActivePath;
   hoverPath: HoverPath;
 
-  population: Population
+  population: Population;
 
   constructor(
     app: PIXI.Application,
     tileNumX: number,
     tileNumY: number,
-    startPosition: Tile,
-    endPosition: Tile
+    startPosition: GridTile,
+    endPosition: GridTile
   ) {
     this.app = app;
     this.tileNumX = tileNumX;
@@ -45,78 +43,72 @@ export default class Grid {
     }
     this.board = board;
 
-    this.activePath = new ActivePath(this);
-    this.hoverPath = new HoverPath(this);
+    this.createEmptyTiles();
 
     this.population = new Population(this);
-    this.population.create(6)
+    this.population.createQueue({
+      delay: 450,
+      queueCount: 1000,
+    });
   }
 
-  private equals = (position1: Tile, position2: Tile) =>
+  private equals = (position1: GridTile, position2: GridTile) =>
     position1.x === position2.x && position1.y === position2.y;
 
-  private isWallBlock = (position: Tile): boolean =>
+  private isWallBlock = (position: GridTile): boolean =>
     position.x === 0 ||
     position.y === 0 ||
     position.x === this.tileNumX - 1 ||
     position.y === this.tileNumY - 1;
 
   public createEmptyTiles() {
-    for (let x = 0; x < this.tileNumX; x++) {
-      for (let y = 0; y < this.tileNumY; y++) {
-        const positionX = this.tileWidth * x;
-        const positionY = this.tileHeight * y;
-
-        const position = {
-          x,
-          y,
+    for (let gridX = 0; gridX < this.tileNumX; gridX++) {
+      for (let gridY = 0; gridY < this.tileNumY; gridY++) {
+        const gridPosition = {
+          x: gridX,
+          y: gridY,
         };
 
-        if (this.equals(position, this.startPosition)) {
-          this.board[x][y] = new Ground(this, {
-            x,
-            y,
-            positionX,
-            positionY,
-            width: this.tileWidth,
-            height: this.tileHeight,
-          });
-          continue;
-        }
-        if (this.equals(position, this.endPosition)) {
-          this.board[x][y] = new Ground(this, {
-            x,
-            y,
-            positionX,
-            positionY,
-            width: this.tileWidth,
-            height: this.tileHeight,
-          });
-          continue;
-        }
-
-        if (this.isWallBlock(position)) {
-          this.board[x][y] = new Wall(this, {
-            x,
-            y,
-            positionX,
-            positionY,
-            width: this.tileWidth,
-            height: this.tileHeight,
-          });
-
-          continue;
-        }
-        this.board[x][y] = new Ground(this, {
-          x,
-          y,
-          positionX,
-          positionY,
+        const dimension = {
           width: this.tileWidth,
           height: this.tileHeight,
-        });
+        };
+
+        const coordinate = {
+          x: gridX * this.tileWidth,
+          y: gridY * this.tileHeight,
+        };
+
+        if (this.equals(gridPosition, this.startPosition)) {
+          this.board[gridX][gridY] = new Ground(this, dimension, coordinate);
+          continue;
+        }
+        if (this.equals(gridPosition, this.endPosition)) {
+          this.board[gridX][gridY] = new Ground(this, dimension, coordinate);
+          continue;
+        }
+
+        if (this.isWallBlock(gridPosition)) {
+          this.board[gridX][gridY] = new Wall(this, dimension, coordinate);
+
+          continue;
+        }
+        this.board[gridX][gridY] = new Ground(this, dimension, coordinate);
       }
     }
-    // this.activePath.update();
+  }
+
+  public gridTileToCoordinate(gridTile: GridTile): Coordinate {
+    return {
+      x: gridTile.x * this.tileWidth,
+      y: gridTile.y * this.tileHeight,
+    };
+  }
+
+  public coordinateToGridTile(coordinate: Coordinate): GridTile {
+    return {
+      x: Math.round(coordinate.x / this.tileWidth),
+      y: Math.round(coordinate.y / this.tileHeight),
+    };
   }
 }

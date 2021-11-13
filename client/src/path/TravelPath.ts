@@ -1,8 +1,8 @@
 import Grid from "@/Grid";
-import Path from "@/overlay/Path";
+import { Path } from "@/path";
 import { generateMatrix, findPath } from "@/utils/pathfind";
 
-export default class ActivePath extends Path {
+export default class TravelPath extends Path {
   constructor(grid: Grid) {
     const texture = "assets/overlay/activePath.png";
     super(grid, texture);
@@ -13,6 +13,7 @@ export default class ActivePath extends Path {
 
     const matrix = generateMatrix(board, tileNumX, tileNumY);
     const path = findPath(startPosition, endPosition, matrix);
+    console.log("path:", path);
 
     super.drawPath(path);
   }

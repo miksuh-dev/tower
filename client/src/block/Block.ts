@@ -1,30 +1,49 @@
 import * as PIXI from "pixi.js";
 import Grid from "@/Grid";
-import { SpriteDimensions } from "@/types";
+import { Dimension, Coordinate, GridTile } from "@/types";
 
 export default class Block {
   public grid: Grid;
   public sprite: PIXI.Sprite;
-  public dimensions: SpriteDimensions;
 
   constructor(
     grid: Grid,
-    dimensions: SpriteDimensions,
+    dimension: Dimension,
+    coordinate: Coordinate,
     texture: PIXI.SpriteSource
   ) {
-    const { positionX, positionY, width, height } = dimensions;
+    const { width, height } = dimension;
+    const { x, y } = coordinate;
 
     const sprite = PIXI.Sprite.from(texture);
 
     sprite.width = width;
     sprite.height = height;
-    sprite.x = positionX;
-    sprite.y = positionY;
+    sprite.x = x;
+    sprite.y = y;
+    sprite.zIndex = 1;
 
     grid.app.stage.addChild(sprite);
 
     this.grid = grid;
     this.sprite = sprite;
-    this.dimensions = dimensions;
+  }
+
+  public getGridPosition(): GridTile {
+    return {
+      x: this.sprite.x / this.grid.tileWidth,
+      y: this.sprite.y / this.grid.tileHeight,
+    };
+  }
+
+  public getCenter(): Coordinate {
+    return {
+      x: this.sprite.x + this.grid.tileWidth / 2,
+      y: this.sprite.y + this.grid.tileHeight / 2,
+    };
+  }
+
+  public destroy() {
+    this.sprite.destroy();
   }
 }

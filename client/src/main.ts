@@ -33,14 +33,7 @@ class App {
         y: tileNumY - 1,
       };
 
-      const grid = new Grid(
-        app,
-        tileNumX,
-        tileNumY,
-        startPosition,
-        endPosition
-      );
-      grid.createEmptyTiles();
+      new Grid(app, tileNumX, tileNumY, startPosition, endPosition);
     }
   }
 }

@@ -1,15 +1,16 @@
 import * as PIXI from "pixi.js";
 import Grid from "@/Grid";
-import { SpriteDimensions } from "@/types";
+import { Dimension, Coordinate } from "@/types";
 import { Block } from "@/block";
 
 export default class InterraciveBlock extends Block {
   constructor(
     grid: Grid,
-    dimensions: SpriteDimensions,
+    dimension: Dimension,
+    coordinate: Coordinate,
     texture: PIXI.SpriteSource
   ) {
-    super(grid, dimensions, texture);
+    super(grid, dimension, coordinate, texture);
 
     this.sprite.interactive = true;
     this.sprite.buttonMode = true;
