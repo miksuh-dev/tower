@@ -1,18 +1,18 @@
 import Grid from "@/Grid";
 import { Block } from "@/block";
 import { Dimension, Coordinate } from "@/types";
-import { GridTile, EnemyProperties, DIRECTION } from "@/types";
-import { generateMatrix, findPath } from "@/utils/pathfind";
-import { Path } from "@/path";
+import { GridTile, EnemyProperties, Direction } from "@/types";
+import { findPath } from "@/utils/pathfind";
+// import { Path } from "@/path";
 import PF from "pathfinding";
 
 export default class Enemy extends Block {
-  private direction: DIRECTION;
+  private direction: Direction;
 
   private path: Array<GridTile>;
   private pathLocation: number; // -- on x path array tile
 
-  private visiblePath: Path;
+  // private visiblePath: Path;
 
   private enemyProperties: EnemyProperties;
 
@@ -23,131 +23,125 @@ export default class Enemy extends Block {
     path: Array<GridTile>,
     enemyProperties: EnemyProperties
   ) {
-    super(grid, dimension, coordinate, "assets/enemy/default.png");
+    super(grid, dimension, coordinate);
 
     this.path = path;
     this.enemyProperties = enemyProperties;
 
     this.pathLocation = 0; // Init at start
 
-    this.direction = this.getDirection(
+    this.direction = this.calculateDirection(
       this.path[this.pathLocation],
       this.path[this.pathLocation + 1]
     );
 
-    // DEBUG DRAW PATH
-    // this.visiblePath = new Path(this.grid, "assets/overlay/activePath.png");
-    // this.visiblePath.drawPath(this.path);
+    this.sprite.zIndex = 100;
   }
 
   public updatePath(matrix: PF.Grid) {
     const currentPosition = this.path[this.pathLocation];
-    console.log("currentPosition:", currentPosition);
 
     const path = findPath(currentPosition, this.grid.endPosition, matrix);
-    console.log("path:", path);
 
-    if (path.length) {
-      console.log("HAS LENGTH!");
-      this.pathLocation = 0;
-      this.path = path;
-
-      this.direction = this.getDirection(
-        this.path[this.pathLocation],
-        this.path[this.pathLocation + 1]
-      );
-    }
+    this.path = path;
+    this.pathLocation = 0;
   }
 
-  private getDirection(current: GridTile, target: GridTile): DIRECTION {
+  private calculateDirection(current: GridTile, target: GridTile): Direction {
     switch (true) {
       case current.y > target.y:
-        return DIRECTION.UP;
+        return Direction.UP;
       case current.x < target.x:
-        return DIRECTION.RIGHT;
+        return Direction.RIGHT;
       case current.y < target.y:
-        return DIRECTION.DOWN;
-      case current.x < target.x:
-        return DIRECTION.LEFT;
+        return Direction.DOWN;
+      case current.x > target.x:
+        return Direction.LEFT;
       default:
-        return DIRECTION.NONE;
+        return Direction.NONE;
     }
   }
 
-  private getDistanceToCenter(
-    position: Coordinate,
-    center: Coordinate,
-    direction: DIRECTION
+  private calculateDistanceToEnd(
+    enemyPosition: Coordinate,
+    currentBlockPosition: Coordinate,
+    tile: Dimension,
+    direction: Direction
   ): number {
-    if (direction === DIRECTION.UP) return center.y - position.y;
-    if (direction === DIRECTION.RIGHT) return center.x - position.x;
-    if (direction === DIRECTION.DOWN) return center.y - position.y;
-    if (direction === DIRECTION.LEFT) return center.x - position.x;
+    if (direction === Direction.UP)
+      return enemyPosition.y - currentBlockPosition.y + tile.height;
+    if (direction === Direction.RIGHT)
+      return currentBlockPosition.x + tile.width - enemyPosition.x;
+    if (direction === Direction.DOWN)
+      return currentBlockPosition.y + tile.height - enemyPosition.y;
+    if (direction === Direction.LEFT)
+      return enemyPosition.x - currentBlockPosition.x + tile.width;
 
     return 0;
   }
 
-  private move(step: number, direction: DIRECTION) {
-    if (direction === DIRECTION.UP) this.sprite.position.y -= step;
-    if (direction === DIRECTION.RIGHT) this.sprite.position.x += step;
-    if (direction === DIRECTION.DOWN) this.sprite.position.y += step;
-    if (direction === DIRECTION.LEFT) this.sprite.position.x -= step;
+  private move(step: number, direction: Direction) {
+    if (direction === Direction.UP) this.sprite.position.y -= step;
+    if (direction === Direction.RIGHT) this.sprite.position.x += step;
+    if (direction === Direction.DOWN) this.sprite.position.y += step;
+    if (direction === Direction.LEFT) this.sprite.position.x -= step;
   }
 
-  /* eslint-disable no-undef */
   public tick(delta: number) {
-    const currentBlockLocation = this.grid.gridTileToCoordinate(
-      this.path[this.pathLocation]
-    );
+    const currentPathLocation = this.path[this.pathLocation];
 
-    const currentBlockCenter = {
-      x: currentBlockLocation.y + this.grid.tileWidth,
-      y: currentBlockLocation.y + this.grid.tileHeight,
+    const currentBlockLocation =
+      this.grid.gridTileToCoordinate(currentPathLocation);
+
+    const currentBlock = {
+      x: currentBlockLocation.x,
+      y: currentBlockLocation.y,
     };
 
-    const distanceToCenter = this.getDistanceToCenter(
+    const distanceToEnd = this.calculateDistanceToEnd(
       {
         x: this.sprite.position.x,
         y: this.sprite.position.y,
       },
-      currentBlockCenter,
+      currentBlock,
+      this.grid.tile,
       this.direction
     );
+    // console.log("distanceToEnd:", distanceToEnd);
 
     const step = this.enemyProperties.speed * delta;
-
-    // console.log("distanceToCenter:", distanceToCenter);
-    // console.log("step:", step);
-    if (distanceToCenter > step) {
+    if (distanceToEnd > step) {
       return this.move(step, this.direction);
     }
 
     const nextGridLocation = this.path[this.pathLocation + 1];
     const newNextGridLocation = this.path[this.pathLocation + 2];
+    // console.log("nextGridLocation:", nextGridLocation);
+    // console.log("newNextGridLocation:", newNextGridLocation);
 
     if (newNextGridLocation) {
       // Move as far as possible on current tile
-      this.move(distanceToCenter, this.direction);
+      this.move(distanceToEnd, this.direction);
 
-      const newDirection = this.getDirection(
+      const newDirection = this.calculateDirection(
         nextGridLocation,
         newNextGridLocation
       );
+      // console.log("newDirection:", Direction[newDirection]);
 
-      // console.log("newDirection:", DIRECTION[newDirection]);
-
-      const remainder = step - distanceToCenter;
+      const remainder = step - distanceToEnd;
       this.move(remainder, newDirection);
 
       this.direction = newDirection;
       this.pathLocation++;
+      // console.log("this.pathLocation:", this.pathLocation);
     } else {
       // No next block, keep moving until destroyeyd
       this.move(step, this.direction);
     }
   }
 
-  public isOnScreen() {
+  public get isOnScreen() {
     const { x, y, width, height } = this.sprite;
     const { width: screenWidth, height: screenHeight } = this.grid.app.screen;
 

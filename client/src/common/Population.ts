@@ -1,12 +1,12 @@
 import Grid from "@/Grid";
 import { Enemy } from "@/block";
 import { UnitQueue, GridTile } from "@/types";
-import { findPath, generateMatrix } from "@/utils/pathfind";
+import { findPath } from "@/utils/pathfind";
 import { Path } from "@/path";
 import PF from "pathfinding";
 
 export default class Population {
-  private units: Array<Enemy>;
+  public units: Array<Enemy>;
   private grid: Grid;
 
   private delay: number;
@@ -15,17 +15,13 @@ export default class Population {
 
   private path: Array<GridTile>;
 
-  constructor(grid: Grid) {
+  private visiblePath: Path;
+
+  constructor(grid: Grid, matrix: PF.Grid) {
     this.grid = grid;
     this.units = new Array();
 
     this.grid.app.ticker.add((delta) => this.tick(delta));
-
-    const matrix = generateMatrix(
-      this.grid.board,
-      this.grid.tileNumX,
-      this.grid.tileNumY
-    );
 
     this.path = findPath(
       this.grid.startPosition,
@@ -33,8 +29,8 @@ export default class Population {
       matrix
     );
 
-    const visiblePath = new Path(this.grid, "assets/overlay/activePath.png");
-    visiblePath.drawPath(this.path);
+    this.visiblePath = new Path(this.grid);
+    this.visiblePath.drawPath(this.path);
   }
 
   public createQueue({ delay, queueCount }: UnitQueue) {
@@ -45,13 +41,13 @@ export default class Population {
 
   private createUnit() {
     const dimension = {
-      width: this.grid.tileWidth,
-      height: this.grid.tileHeight,
+      width: this.grid.tile.width,
+      height: this.grid.tile.height,
     };
 
     const coordinate = {
-      x: this.grid.startPosition.x * this.grid.tileWidth,
-      y: this.grid.startPosition.y * this.grid.tileHeight,
+      x: this.grid.startPosition.x * this.grid.tile.width,
+      y: this.grid.startPosition.y * this.grid.tile.height,
     };
 
     const enemyProperties = {
@@ -70,17 +66,18 @@ export default class Population {
     // console.log("this.units:", this.units);
   }
 
-  public onUpdatePath() {
-    console.log("on path update");
-    const matrix = generateMatrix(
-      this.grid.board,
-      this.grid.tileNumX,
-      this.grid.tileNumY
-    );
-
+  public updatePath(matrix: PF.Grid) {
     this.units.forEach((unit: Enemy) => {
       unit.updatePath(matrix);
     });
+
+    this.path = findPath(
+      this.grid.startPosition,
+      this.grid.endPosition,
+      matrix
+    );
+
+    this.visiblePath.drawPath(this.path);
   }
 
   public tick(delta: number) {
@@ -98,7 +95,7 @@ export default class Population {
     this.units.forEach((unit: Enemy, index) => {
       unit.tick(delta);
 
-      if (!unit.isOnScreen()) {
+      if (!unit.isOnScreen) {
         unit.destroy();
         this.units.splice(index, 1);
         console.log(`destroyd enemy idx ${index}`);

@@ -1,5 +1,5 @@
 import Path from "./Path";
-import TravelPath from "./TravelPath";
+import ActivePath from "./ActivePath";
 import HoverPath from "./HoverPath";
 
-export { Path, TravelPath, HoverPath };
+export { Path, ActivePath, HoverPath };

@@ -1,24 +1,26 @@
 import * as PIXI from "pixi.js";
 import Grid from "@/Grid";
 import { GridTile } from "@/types";
+import { textureWithFallback } from "@/utils/texture";
 
 export default class Path {
   grid: Grid;
-  texture: PIXI.SpriteSource;
+  texture: PIXI.Texture<PIXI.Resource>;
   container: PIXI.Container;
   path: Array<GridTile>;
 
-  constructor(grid: Grid, texture: PIXI.SpriteSource) {
+  constructor(grid: Grid) {
+    this.container = new PIXI.Container();
     this.grid = grid;
-    this.texture = texture;
+
+    const texturePath = `assets/block/${this.name}.png`;
+    this.texture = PIXI.Texture.from(textureWithFallback(texturePath));
   }
 
   public drawPath(path: Array<GridTile> = []) {
-    if (this.container) this.container.destroy();
+    if (this.container.children.length) this.container.removeChildren();
 
-    const newContainer = new PIXI.Container();
-
-    const { tileHeight, tileWidth } = this.grid;
+    const { height: tileHeight, width: tileWidth } = this.grid.tile;
 
     path.forEach((item) => {
       const { x: gridX, y: gridY } = item;
@@ -33,13 +35,15 @@ export default class Path {
       sprite.height = tileHeight;
       sprite.x = x;
       sprite.y = y;
-      sprite.zIndex = 5;
+      sprite.zIndex = 1;
 
-      newContainer.addChild(sprite);
+      this.container.addChild(sprite);
     });
 
-    this.container = newContainer;
     this.path = path;
-    this.grid.app.stage.addChild(this.container);
+  }
+
+  public get name() {
+    return this.constructor.name.toLowerCase();
   }
 }

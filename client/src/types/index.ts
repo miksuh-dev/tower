@@ -1,9 +1,26 @@
-// import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js";
 import { Interactive } from "@/block";
+
+export interface BoardSize {
+  x: number;
+  y: number;
+}
+
+export interface TileSize {
+  width: number;
+  height: number;
+}
 
 export interface Dimension {
   width: number;
   height: number;
+}
+
+export interface Rect {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
 }
 
 export interface InterrativeBlockOnClick {
@@ -17,15 +34,13 @@ export interface InterraciveBlockOnHoverOut {
   (block: Interactive): void;
 }
 
-export interface InterracitveBlockActions {
-  onClick?: InterrativeBlockOnClick;
-  onHover?: InterraciveBlockOnHover;
-  OnHoverOut?: InterraciveBlockOnHoverOut;
-}
-
 export interface GridTile {
   x: number;
   y: number;
+}
+
+export interface TurretProperties {
+  range: number;
 }
 
 export interface EnemyProperties {
@@ -42,7 +57,15 @@ export interface UnitQueue {
   queueCount: number;
 }
 
-export enum DIRECTION {
+export interface Texture {
+  default: PIXI.Texture<PIXI.Resource>;
+  onHover?: PIXI.Texture<PIXI.Resource>;
+  onClick?: PIXI.Texture<PIXI.Resource>;
+  allowed?: PIXI.Texture<PIXI.Resource>;
+  notAllowed?: PIXI.Texture<PIXI.Resource>;
+}
+
+export enum Direction {
   "UP",
   "RIGHT",
   "DOWN",

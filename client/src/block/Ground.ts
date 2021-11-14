@@ -1,60 +1,38 @@
 import Grid from "@/Grid";
-import { Turret, Interactive } from "@/block";
+import { Interactive } from "@/block";
 import { Dimension, Coordinate } from "@/types";
 
 export default class Ground extends Interactive {
   constructor(grid: Grid, dimension: Dimension, coordinate: Coordinate) {
-    const texture = "assets/block/ground.png";
-    super(grid, dimension, coordinate, texture);
-
-    this.sprite
-      .on("pointerdown", () => {
-        super.onClick();
-        this.onClick();
-      })
-      .on("pointerup", () => {
-        super.onClickRelease();
-        this.onClickRelease();
-      })
-      .on("pointerover", () => {
-        super.onHover();
-        this.onHover();
-      })
-      .on("pointerout", () => {
-        super.onHoverOut();
-        this.onHoverOut();
-      });
+    super(grid, dimension, coordinate);
   }
 
   protected onClick() {
-    const { height, width, x, y } = this.sprite;
+    if (this.isBuildAllowed()) {
+      const { x, y } = this.gridPosition;
+      super.onClick();
 
-    const newBlock = new Turret(
-      this.grid,
-      {
-        width,
-        height,
-      },
-      {
-        x,
-        y,
-      }
-    );
-
-    const { x: gridX, y: gridY } = this.getGridPosition();
-
-    this.grid.board[gridX][gridY] = newBlock;
-    this.sprite.destroy();
-    this.grid.population.onUpdatePath();
-  }
-
-  protected onHover() {
-    if (this.grid.hoverPath) {
-      const position = this.getGridPosition();
-
-      this.grid.hoverPath.update(position);
+      this.grid.turrets.add({ x, y });
+      this.sprite.destroy();
+    } else {
+      super.onClick(this.texture.notAllowed);
     }
   }
 
-  protected onHoverOut() {}
+  protected onHover() {
+    if (this.isBuildAllowed()) {
+      super.onHover();
+    } else {
+      super.onHover(this.texture.notAllowed);
+    }
+  }
+
+  protected onHoverOut() {
+    super.onHoverOut();
+  }
+
+  protected isBuildAllowed(): boolean {
+    const { x, y } = this.gridPosition;
+    return this.grid.isNonBlocking({ x, y }) && !this.grid.hasEnemy(this);
+  }
 }

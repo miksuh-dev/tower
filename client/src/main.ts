@@ -1,8 +1,9 @@
 import * as PIXI from "pixi.js";
+import { Application } from "@pixi/app";
 import Grid from "@/Grid";
 
 class App {
-  app: PIXI.Application;
+  app: Application;
 
   constructor() {
     const game = document.getElementById("game");
@@ -18,10 +19,14 @@ class App {
         resolution: window.devicePixelRatio || 1,
       });
 
+      PIXI.settings.SORTABLE_CHILDREN = true;
+
       game.appendChild(app.view);
 
-      const tileNumX = 10;
-      const tileNumY = 10;
+      const boardSize = {
+        x: 12,
+        y: 12,
+      };
 
       const startPosition = {
         x: 1,
@@ -29,11 +34,11 @@ class App {
       };
 
       const endPosition = {
-        x: tileNumX - 2,
-        y: tileNumY - 1,
+        x: boardSize.x - 2,
+        y: boardSize.y - 1,
       };
 
-      new Grid(app, tileNumX, tileNumY, startPosition, endPosition);
+      new Grid(app, boardSize, startPosition, endPosition);
     }
   }
 }

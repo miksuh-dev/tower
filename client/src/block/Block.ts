@@ -1,49 +1,100 @@
 import * as PIXI from "pixi.js";
 import Grid from "@/Grid";
-import { Dimension, Coordinate, GridTile } from "@/types";
+import { Dimension, Coordinate, GridTile, Rect, Texture } from "@/types";
+import { textureWithFallback } from "@/utils/texture";
 
 export default class Block {
+  public container: PIXI.Container;
   public grid: Grid;
   public sprite: PIXI.Sprite;
+  public texture: Texture;
+  public initialTexture: PIXI.Texture<PIXI.Resource>;
 
-  constructor(
-    grid: Grid,
-    dimension: Dimension,
-    coordinate: Coordinate,
-    texture: PIXI.SpriteSource
-  ) {
+  constructor(grid: Grid, dimension: Dimension, coordinate: Coordinate) {
+    const container = new PIXI.Container();
+    container.sortableChildren = true;
+
     const { width, height } = dimension;
     const { x, y } = coordinate;
 
-    const sprite = PIXI.Sprite.from(texture);
+    const texture = {
+      default: PIXI.Texture.from(
+        textureWithFallback(`assets/block/${this.name}.png`)
+      ),
+      notAllowed: PIXI.Texture.from(
+        textureWithFallback(`assets/block/notallowed.png`)
+      ),
+    };
+
+    const sprite = PIXI.Sprite.from(texture.default);
 
     sprite.width = width;
     sprite.height = height;
-    sprite.x = x;
-    sprite.y = y;
+    sprite.position.x = x;
+    sprite.position.y = y;
     sprite.zIndex = 1;
 
-    grid.app.stage.addChild(sprite);
+    container.addChild(sprite);
+    grid.app.stage.addChild(container);
 
     this.grid = grid;
     this.sprite = sprite;
+    this.texture = texture;
+    this.container = container;
   }
 
-  public getGridPosition(): GridTile {
+  // get gridPosition(): GridTile {
+  public get gridPosition(): GridTile {
     return {
-      x: this.sprite.x / this.grid.tileWidth,
-      y: this.sprite.y / this.grid.tileHeight,
+      x: Math.round(this.sprite.position.x / this.grid.tile.width),
+      y: Math.round(this.sprite.position.y / this.grid.tile.height),
     };
   }
 
-  public getCenter(): Coordinate {
+  public get center(): Coordinate {
     return {
-      x: this.sprite.x + this.grid.tileWidth / 2,
-      y: this.sprite.y + this.grid.tileHeight / 2,
+      x: this.sprite.position.x + this.grid.tile.width / 2,
+      y: this.sprite.position.y + this.grid.tile.height / 2,
     };
+  }
+
+  public get name() {
+    return this.constructor.name.toLowerCase();
   }
 
   public destroy() {
     this.sprite.destroy();
+  }
+
+  public getBounds() {
+    return this.sprite.getBounds();
+  }
+
+  public pointIntersects(coordinate: Coordinate) {
+    const { width, height, x, y } = this.sprite.getBounds();
+
+    const top = y;
+    const right = x + width;
+    const bottom = y + height;
+    const left = x;
+
+    return (
+      top <= coordinate.y &&
+      bottom >= coordinate.y &&
+      left <= coordinate.x &&
+      right >= coordinate.x
+    );
+  }
+
+  public intersects(rect: Rect) {
+    return (
+      this.pointIntersects({ x: rect.x, y: rect.y }) ||
+      this.pointIntersects({ x: rect.x + rect.width, y: rect.y }) ||
+      this.pointIntersects({
+        x: rect.x + rect.width,
+        y: rect.y + rect.height,
+      }) ||
+      this.pointIntersects({ x: rect.x, y: rect.y + rect.height })
+    );
   }
 }
