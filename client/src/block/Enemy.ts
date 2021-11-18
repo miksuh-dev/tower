@@ -1,3 +1,4 @@
+import * as PIXI from "pixi.js";
 import Grid from "@/Grid";
 import { Block } from "@/block";
 import { Dimension, Coordinate } from "@/types";
@@ -12,21 +13,25 @@ export default class Enemy extends Block {
   private path: Array<GridTile>;
   private pathLocation: number; // -- on x path array tile
 
+  private headerContainer = new PIXI.Container();
+
   // private visiblePath: Path;
 
-  private enemyProperties: EnemyProperties;
+  private properties: EnemyProperties;
+  public health: number;
 
   constructor(
     grid: Grid,
     dimension: Dimension,
     coordinate: Coordinate,
     path: Array<GridTile>,
-    enemyProperties: EnemyProperties
+    properties: EnemyProperties
   ) {
     super(grid, dimension, coordinate);
 
     this.path = path;
-    this.enemyProperties = enemyProperties;
+    this.properties = properties;
+    this.health = this.properties.maxHealth;
 
     this.pathLocation = 0; // Init at start
 
@@ -36,6 +41,39 @@ export default class Enemy extends Block {
     );
 
     this.sprite.zIndex = 100;
+
+    this.container.addChild(this.headerContainer);
+    this.updateHeader();
+  }
+
+  public updateHeader() {
+    const healthBar = new PIXI.Container();
+
+    const width = this.sprite.width * 1.3;
+    const height = this.sprite.height * 0.3;
+    const x = this.sprite.width - (width / 2 - this.sprite.width / 2);
+    const y = -(height * 1.5);
+
+    const padding = height / 5;
+
+    const outer = new PIXI.Graphics();
+    outer.beginFill(0x000000);
+    outer.drawRect(x, y, width, height);
+    outer.endFill();
+    healthBar.addChild(outer);
+
+    const inner = new PIXI.Graphics();
+
+    const innerWidth =
+      (width - padding * 2) * (this.health / this.properties.maxHealth);
+
+    inner.beginFill(0xde3249);
+    inner.drawRect(x + padding, y + padding, innerWidth, height - padding * 2);
+    inner.endFill();
+    healthBar.addChild(inner);
+
+    this.headerContainer.removeChildren();
+    this.headerContainer.addChild(healthBar);
   }
 
   public updatePath(matrix: PF.Grid) {
@@ -81,10 +119,31 @@ export default class Enemy extends Block {
   }
 
   private move(step: number, direction: Direction) {
-    if (direction === Direction.UP) this.sprite.position.y -= step;
-    if (direction === Direction.RIGHT) this.sprite.position.x += step;
-    if (direction === Direction.DOWN) this.sprite.position.y += step;
-    if (direction === Direction.LEFT) this.sprite.position.x -= step;
+    if (direction === Direction.UP) {
+      this.headerContainer.position.y -= step;
+      this.sprite.position.y -= step;
+    }
+    if (direction === Direction.RIGHT) {
+      this.headerContainer.position.x += step;
+      this.sprite.position.x += step;
+    }
+    if (direction === Direction.DOWN) {
+      this.headerContainer.position.y += step;
+      this.sprite.position.y += step;
+    }
+    if (direction === Direction.LEFT) {
+      this.headerContainer.position.x -= step;
+      this.sprite.position.x -= step;
+    }
+  }
+
+  public doDamage(damage: number) {
+    this.health -= damage;
+
+    this.updateHeader();
+    if (this.health <= 0) {
+      this.destroy();
+    }
   }
 
   public tick(delta: number) {
@@ -109,7 +168,7 @@ export default class Enemy extends Block {
     );
     // console.log("distanceToEnd:", distanceToEnd);
 
-    const step = this.enemyProperties.speed * delta;
+    const step = this.properties.speed * delta;
     if (distanceToEnd > step) {
       return this.move(step, this.direction);
     }
@@ -138,6 +197,8 @@ export default class Enemy extends Block {
     } else {
       // No next block, keep moving until destroyeyd
       this.move(step, this.direction);
+
+      if (!this.isOnScreen) this.destroy();
     }
   }
 
@@ -150,5 +211,10 @@ export default class Enemy extends Block {
     if (y + height <= 0) return false;
     if (y >= screenHeight) return false;
     return true;
+  }
+
+  public destroy() {
+    super.destroy();
+    this.headerContainer.destroy();
   }
 }

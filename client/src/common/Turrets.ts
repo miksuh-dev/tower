@@ -11,6 +11,8 @@ export default class Turrets {
   constructor(grid: Grid) {
     this.grid = grid;
     this.container;
+
+    this.grid.app.ticker.add((delta) => this.tick(delta));
   }
 
   public add(gridPosition: GridTile) {
@@ -18,10 +20,11 @@ export default class Turrets {
     const coordinate = this.grid.gridTileToCoordinate(gridPosition);
 
     const turretProperties = {
-      range: 200,
+      range: 400,
+      shootSpeed: 10,
     };
 
-    const newBlock = new Turret(
+    const turret = new Turret(
       this.grid,
       {
         width: this.grid.tile.width,
@@ -31,7 +34,15 @@ export default class Turrets {
       turretProperties
     );
 
-    this.grid.board[x][y] = newBlock;
+    this.units.push(turret);
+
+    this.grid.board[x][y] = turret;
     this.grid.updatePath();
+  }
+
+  public tick(delta: number) {
+    this.units.forEach((unit: Turret) => {
+      unit.tick(delta);
+    });
   }
 }

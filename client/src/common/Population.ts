@@ -29,8 +29,8 @@ export default class Population {
       matrix
     );
 
-    this.visiblePath = new Path(this.grid);
-    this.visiblePath.drawPath(this.path);
+    // this.visiblePath = new Path(this.grid);
+    // this.visiblePath.drawPath(this.path);
   }
 
   public createQueue({ delay, queueCount }: UnitQueue) {
@@ -50,8 +50,9 @@ export default class Population {
       y: this.grid.startPosition.y * this.grid.tile.height,
     };
 
-    const enemyProperties = {
+    const properties = {
       speed: 5,
+      maxHealth: 100,
     };
 
     const newEnemy = new Enemy(
@@ -59,7 +60,7 @@ export default class Population {
       dimension,
       coordinate,
       this.path,
-      enemyProperties
+      properties
     );
     this.units.push(newEnemy);
     // console.log("len:", len);
@@ -77,7 +78,7 @@ export default class Population {
       matrix
     );
 
-    this.visiblePath.drawPath(this.path);
+    // this.visiblePath.drawPath(this.path);
   }
 
   public tick(delta: number) {
@@ -93,13 +94,12 @@ export default class Population {
     }
 
     this.units.forEach((unit: Enemy, index) => {
-      unit.tick(delta);
-
-      if (!unit.isOnScreen) {
-        unit.destroy();
+      if (unit.isDestroyed) {
         this.units.splice(index, 1);
-        console.log(`destroyd enemy idx ${index}`);
+        console.log("destroyed enemy");
+        return;
       }
+      unit.tick(delta);
     });
   }
 }

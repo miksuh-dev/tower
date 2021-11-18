@@ -9,6 +9,7 @@ export default class Block {
   public sprite: PIXI.Sprite;
   public texture: Texture;
   public initialTexture: PIXI.Texture<PIXI.Resource>;
+  public isDestroyed = false;
 
   constructor(grid: Grid, dimension: Dimension, coordinate: Coordinate) {
     const container = new PIXI.Container();
@@ -64,6 +65,7 @@ export default class Block {
 
   public destroy() {
     this.sprite.destroy();
+    this.isDestroyed = true;
   }
 
   public getBounds() {
@@ -96,5 +98,12 @@ export default class Block {
       }) ||
       this.pointIntersects({ x: rect.x, y: rect.y + rect.height })
     );
+  }
+
+  public distance(block: Block) {
+    const { x: x1, y: y1 } = this.sprite.position;
+    const { x: x2, y: y2 } = block.sprite.position;
+
+    return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
   }
 }
