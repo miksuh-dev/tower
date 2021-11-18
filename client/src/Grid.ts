@@ -63,7 +63,7 @@ export default class Grid {
 
     const population = new Population(this, this.matrix);
     population.createQueue({
-      delay: 75,
+      delay: 15,
       queueCount: 10000,
     });
 

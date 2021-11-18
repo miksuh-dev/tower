@@ -22,6 +22,10 @@ export default class Turrets {
     const turretProperties = {
       range: 400,
       shootSpeed: 10,
+      bullet: {
+        speed: 20,
+        damage: 25,
+      },
     };
 
     const turret = new Turret(

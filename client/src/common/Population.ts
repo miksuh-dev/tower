@@ -2,7 +2,7 @@ import Grid from "@/Grid";
 import { Enemy } from "@/block";
 import { UnitQueue, GridTile } from "@/types";
 import { findPath } from "@/utils/pathfind";
-import { Path } from "@/path";
+// import { Path } from "@/path";
 import PF from "pathfinding";
 
 export default class Population {
@@ -15,7 +15,7 @@ export default class Population {
 
   private path: Array<GridTile>;
 
-  private visiblePath: Path;
+  // private visiblePath: Path;
 
   constructor(grid: Grid, matrix: PF.Grid) {
     this.grid = grid;
@@ -52,7 +52,7 @@ export default class Population {
 
     const properties = {
       speed: 5,
-      maxHealth: 100,
+      maxHealth: 50,
     };
 
     const newEnemy = new Enemy(

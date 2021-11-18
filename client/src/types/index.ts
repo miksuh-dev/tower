@@ -42,6 +42,7 @@ export interface GridTile {
 export interface TurretProperties {
   range: number;
   shootSpeed: number;
+  bullet: BulletProperties;
 }
 
 export interface EnemyProperties {

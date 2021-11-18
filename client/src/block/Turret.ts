@@ -5,7 +5,7 @@ import { Bullet } from "@/common";
 import { Dimension, Coordinate, TurretProperties } from "@/types";
 
 export default class Turret extends Interactive {
-  private turretProperties: TurretProperties;
+  private properties: TurretProperties;
   private rangeSprite = new PIXI.Graphics();
   private bulletContainer = new PIXI.Container();
   private bullets = new Array<Bullet>();
@@ -17,7 +17,7 @@ export default class Turret extends Interactive {
     grid: Grid,
     dimension: Dimension,
     coordinate: Coordinate,
-    turretProperties: TurretProperties
+    properties: TurretProperties
   ) {
     super(grid, dimension, coordinate);
 
@@ -39,14 +39,14 @@ export default class Turret extends Interactive {
         this.onHoverOut();
       });
 
-    this.turretProperties = turretProperties;
+    this.properties = properties;
     this.container.addChild(this.rangeSprite);
     this.container.addChild(this.bulletContainer);
   }
 
   public drawRange() {
     const { x, y } = this.center;
-    const { range } = this.turretProperties;
+    const { range } = this.properties;
 
     const graphics = new PIXI.Graphics();
     graphics.lineStyle(2, 0x454545, 0.5);
@@ -74,45 +74,38 @@ export default class Turret extends Interactive {
     this.clearRange();
   }
 
-  public findTarget() {
+  public findNewTarget() {
     const enemies = this.grid.population.units;
 
     const target = enemies.find((enemy: Enemy) => {
-      if (enemy.isDestroyed) return false;
-      return this.isInRange(enemy);
+      return this.isValidTarget(enemy);
     });
 
-    this.target = target;
+    return target;
   }
 
   public shoot(target: Enemy) {
-    const properties = {
-      speed: 20,
-      damage: 25,
-    };
-    const bullet = new Bullet(this.grid, this, target, properties);
+    const bullet = new Bullet(this.grid, this, target, this.properties.bullet);
 
     this.bulletContainer.addChild(bullet.graphics);
     this.bullets.push(bullet);
+
+    target.incomingDamage += this.properties.bullet.damage;
   }
 
   private isInRange(enemy: Enemy) {
-    return this.turretProperties.range >= enemy.distance(this);
+    return this.properties.range >= enemy.distance(this);
+  }
+
+  private isValidTarget(enemy: Enemy | undefined) {
+    if (!enemy) return false;
+    if (enemy.isDestroyed) return false;
+    if (!this.isInRange(enemy)) return false;
+    if (enemy.incomingDamage >= enemy.health) return false;
+    return true;
   }
 
   public tick(delta: number) {
-    if (!this.target || this.target.isDestroyed || !this.isInRange(this.target))
-      this.findTarget();
-
-    if (this.target) {
-      this.lastShot -= delta;
-      if (this.lastShot < 0) {
-        const remainder = Math.abs(this.lastShot);
-        this.lastShot = this.turretProperties.shootSpeed - remainder;
-        this.shoot(this.target);
-      }
-    }
-
     if (this.bullets.length) {
       this.bullets.forEach((bullet: Bullet, index) => {
         const { target } = bullet;
@@ -134,6 +127,19 @@ export default class Turret extends Interactive {
           this.bullets.splice(index, 1);
         }
       });
+    }
+
+    if (!this.isValidTarget(this.target)) {
+      this.target = this.findNewTarget();
+    }
+
+    if (this.target) {
+      this.lastShot -= delta;
+      if (this.lastShot < 0) {
+        const remainder = Math.abs(this.lastShot);
+        this.lastShot = this.properties.shootSpeed - remainder;
+        this.shoot(this.target);
+      }
     }
   }
 }

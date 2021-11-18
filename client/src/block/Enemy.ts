@@ -19,6 +19,7 @@ export default class Enemy extends Block {
 
   private properties: EnemyProperties;
   public health: number;
+  public incomingDamage = 0;
 
   constructor(
     grid: Grid,
@@ -43,7 +44,7 @@ export default class Enemy extends Block {
     this.sprite.zIndex = 100;
 
     this.container.addChild(this.headerContainer);
-    this.updateHeader();
+    this.container.zIndex = 101;
   }
 
   public updateHeader() {
