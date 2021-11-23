@@ -51,8 +51,8 @@ export default class Population {
     };
 
     const properties = {
-      speed: 5,
-      maxHealth: 50,
+      speed: 2,
+      maxHealth: 350,
     };
 
     const newEnemy = new Enemy(

@@ -42,6 +42,7 @@ export default class Turret extends Interactive {
     this.properties = properties;
     this.container.addChild(this.rangeSprite);
     this.container.addChild(this.bulletContainer);
+    this.bulletContainer.zIndex = 1000;
   }
 
   public drawRange() {
@@ -87,7 +88,7 @@ export default class Turret extends Interactive {
   public shoot(target: Enemy) {
     const bullet = new Bullet(this.grid, this, target, this.properties.bullet);
 
-    this.bulletContainer.addChild(bullet.graphics);
+    this.bulletContainer.addChild(bullet.sprite);
     this.bullets.push(bullet);
 
     target.incomingDamage += this.properties.bullet.damage;
@@ -101,7 +102,7 @@ export default class Turret extends Interactive {
     if (!enemy) return false;
     if (enemy.isDestroyed) return false;
     if (!this.isInRange(enemy)) return false;
-    if (enemy.incomingDamage >= enemy.health) return false;
+    // if (enemy.incomingDamage > enemy.health) return false;
     return true;
   }
 

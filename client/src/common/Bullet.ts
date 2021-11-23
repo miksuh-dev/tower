@@ -2,13 +2,14 @@ import * as PIXI from "pixi.js";
 import Grid from "@/Grid";
 import { BulletProperties } from "@/types";
 import { Enemy, Turret } from "@/block";
+import { textureWithFallback } from "@/utils/texture";
 
 export default class Bullet {
   private grid: Grid;
   private turret: Turret;
   public target: Enemy;
   public properties: BulletProperties;
-  public graphics: PIXI.Graphics;
+  public sprite: PIXI.Sprite;
   public hit = false;
 
   constructor(
@@ -24,24 +25,30 @@ export default class Bullet {
 
     const { x, y } = turret.center;
 
-    const graphics = new PIXI.Graphics();
-    graphics.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
-    graphics.beginFill(0xde3249, 1);
-    graphics.drawCircle(0, 0, 15);
-    graphics.position.x = x;
-    graphics.position.y = y;
-    graphics.endFill();
-    graphics.zIndex = 1000;
+    const sprite = PIXI.Sprite.from(textureWithFallback("bullet"));
 
-    this.graphics = graphics;
+    // const graphics = new PIXI.Graphics();
+    // sprite.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
+    // sprite.beginFill(0xde3249, 1);
+    // sprite.drawCircle(0, 0, this.grid.tile.width / 7);
+    sprite.position.x = x;
+    sprite.position.y = y;
+    sprite.width = 50;
+    sprite.height = 50;
+    sprite.anchor.x = 0.5;
+    sprite.anchor.y = 0.5;
+    // sprite.endFill();
+    sprite.zIndex = 1000;
+
+    this.sprite = sprite;
   }
 
   public destroy() {
-    this.graphics.destroy();
+    this.sprite.destroy();
   }
 
   public tick(delta: number) {
-    const source = this.graphics.position;
+    const source = this.sprite.position;
     const target = this.target.center;
 
     const deltaX = target.x - source.x;
@@ -59,8 +66,8 @@ export default class Bullet {
     const velX = deltaX * velocityScale;
     const velY = deltaY * velocityScale;
 
-    this.graphics.position.x += velX;
-    this.graphics.position.y += velY;
+    this.sprite.position.x += velX;
+    this.sprite.position.y += velY;
   }
 
   // console.log("bullet travel:");

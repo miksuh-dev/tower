@@ -19,12 +19,8 @@ export default class Block {
     const { x, y } = coordinate;
 
     const texture = {
-      default: PIXI.Texture.from(
-        textureWithFallback(`assets/block/${this.name}.png`)
-      ),
-      notAllowed: PIXI.Texture.from(
-        textureWithFallback(`assets/block/notallowed.png`)
-      ),
+      default: PIXI.Texture.from(textureWithFallback(this.name)),
+      notAllowed: PIXI.Texture.from(textureWithFallback("notAllowed")),
     };
 
     const sprite = PIXI.Sprite.from(texture.default);

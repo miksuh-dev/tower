@@ -1,6 +1,8 @@
+import * as PIXI from "pixi.js";
 import Grid from "@/Grid";
 import { Interactive } from "@/block";
 import { Dimension, Coordinate } from "@/types";
+import { textureWithFallback } from "@/utils/texture";
 
 export default class Ground extends Interactive {
   constructor(grid: Grid, dimension: Dimension, coordinate: Coordinate) {
@@ -13,7 +15,7 @@ export default class Ground extends Interactive {
       super.onClick();
 
       this.grid.turrets.add({ x, y });
-      this.sprite.destroy();
+      // this.sprite.destroy();
     } else {
       super.onClick(this.texture.notAllowed);
     }
@@ -21,7 +23,7 @@ export default class Ground extends Interactive {
 
   protected onHover() {
     if (this.isBuildAllowed()) {
-      super.onHover();
+      super.onHover(PIXI.Texture.from(textureWithFallback("groundHover")));
     } else {
       super.onHover(this.texture.notAllowed);
     }

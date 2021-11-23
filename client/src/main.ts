@@ -24,9 +24,14 @@ class App {
       game.appendChild(app.view);
 
       const boardSize = {
-        x: 12,
-        y: 12,
+        x: 18,
+        y: 18,
       };
+
+      // const boardSize = {
+      //   x: 12,
+      //   y: 12,
+      // };
 
       const startPosition = {
         x: 1,

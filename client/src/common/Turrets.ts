@@ -20,7 +20,7 @@ export default class Turrets {
     const coordinate = this.grid.gridTileToCoordinate(gridPosition);
 
     const turretProperties = {
-      range: 400,
+      range: 250,
       shootSpeed: 10,
       bullet: {
         speed: 20,

@@ -13,8 +13,7 @@ export default class Path {
     this.container = new PIXI.Container();
     this.grid = grid;
 
-    const texturePath = `assets/block/${this.name}.png`;
-    this.texture = PIXI.Texture.from(textureWithFallback(texturePath));
+    this.texture = PIXI.Texture.from(textureWithFallback(this.name));
   }
 
   public drawPath(path: Array<GridTile> = []) {

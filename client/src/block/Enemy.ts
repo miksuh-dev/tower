@@ -41,10 +41,7 @@ export default class Enemy extends Block {
       this.path[this.pathLocation + 1]
     );
 
-    this.sprite.zIndex = 100;
-
     this.container.addChild(this.headerContainer);
-    this.container.zIndex = 101;
   }
 
   public updateHeader() {
@@ -187,6 +184,25 @@ export default class Enemy extends Block {
         nextGridLocation,
         newNextGridLocation
       );
+
+      if (
+        this.direction === Direction.RIGHT &&
+        newDirection === Direction.LEFT
+      ) {
+        // this.sprite.scale.x = -1;
+        this.sprite.anchor.x = 1; /* 0 = top, 0.5 = center, 1 = bottom */
+        this.sprite.scale.x *= 1; /* flip vertically */
+      }
+
+      if (
+        this.direction === Direction.LEFT &&
+        newDirection === Direction.RIGHT
+      ) {
+        // this.sprite.scale.x = 1;
+        this.sprite.anchor.x = 1; /* 0 = top, 0.5 = center, 1 = bottom */
+        this.sprite.scale.x *= -1; /* flip vertically */
+      }
+
       // console.log("newDirection:", Direction[newDirection]);
 
       const remainder = step - distanceToEnd;
@@ -198,7 +214,6 @@ export default class Enemy extends Block {
     } else {
       // No next block, keep moving until destroyeyd
       this.move(step, this.direction);
-
       if (!this.isOnScreen) this.destroy();
     }
   }

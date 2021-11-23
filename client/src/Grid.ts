@@ -63,7 +63,7 @@ export default class Grid {
 
     const population = new Population(this, this.matrix);
     population.createQueue({
-      delay: 15,
+      delay: 55,
       queueCount: 10000,
     });
 
@@ -72,7 +72,7 @@ export default class Grid {
     this.population = population;
   }
 
-  private equals = (position1: GridTile, position2: GridTile) =>
+  public equals = (position1: GridTile, position2: GridTile) =>
     position1.x === position2.x && position1.y === position2.y;
 
   private isWallBlock = (position: GridTile): boolean =>
